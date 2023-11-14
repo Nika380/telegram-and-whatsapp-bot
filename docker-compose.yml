@@ -1,0 +1,48 @@
+services:
+  fastapi1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ID=
+      - APP_HASH=
+      - PHONE_NUMBER=
+      - HTTP_PORT=8001
+    ports:
+      - "8001:8001"
+
+  # fastapi2:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - APP_ID=
+  #     - APP_HASH=
+  #     - PHONE_NUMBER=
+  #     - HTTP_PORT=8002
+  #   ports:
+  #     - '8002:8002'
+
+  # fastapi3:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - APP_ID=
+  #     - APP_HASH=
+  #     - PHONE_NUMBER=
+  #     - HTTP_PORT=8003
+  #   ports:
+  #     - '8003:8003'
+
+  # fastapi4:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - APP_ID=
+  #     - APP_HASH=
+  #     - PHONE_NUMBER=
+  #     - HTTP_PORT=8004
+  #   ports:
+  #     - '8004:8004'
