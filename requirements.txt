@@ -1,9 +1,5 @@
-anyio
 fastapi
-Pyrogram
-uvicorn
-TgCrypto
 pyrogram
-pydantic
-telethon
-decouple
+uvicorn
+python-dotenv
+
