@@ -7,7 +7,7 @@ import uvicorn
 from dotenv import load_dotenv
 from pydantic import BaseModel
 import traceback
-from pyrogram.errors import FloodWait
+from pyrogram.errors import FloodWait, PeerFlood
 import subprocess
 
 load_dotenv()
@@ -41,16 +41,19 @@ class messageRequest(BaseModel):
     session_id: int
 
 async def authorize_user(session_id: str):
+    app = None
     try:
         app = Client(f"./sessions/telegram-client-session-{session_id}", api_id=api_ids_arr[session_id], api_hash=api_hashs_arr[session_id], phone_number="+" + str(array_of_phone_numbers[int(session_id)]))
         await app.start()
         if not app.is_connected:
             await app.send_code('+' + str(array_of_phone_numbers[session_id]))
             await app.sign_in('+' + str(array_of_phone_numbers[session_id]), input("Enter the code: "))
-        await app.stop()
         return app  
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if app is not None:
+            await app.stop()
 
 @api.post('/create-sessions')
 async def create_user_sessions():
@@ -89,10 +92,12 @@ async def get_contacts_list(client_id: int = Path(...), country_code: str = Path
         contacts_response.sort(key=custom_sort_key)
 
         return JSONResponse(content=contacts_response, status_code=200)
+    except (FloodWait, PeerFlood) as e:
+        raise HTTPException(409, detail=str(e))
     except Exception as e:
         traceback.print_exc()
         print(f"Error in get_contacts_list: {e}")
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        raise HTTPException(500, detail="error: " + str(e))
 
 @api.post('/send-message')
 async def send_message_func(request: messageRequest):
@@ -102,7 +107,7 @@ async def send_message_func(request: messageRequest):
         await client.zsend_message(request.recipient, request.text)
         await client.stop()
         return JSONResponse("Send Successfully" + str(request), status_code=201)
-    except FloodWait as floodError:
+    except (FloodWait, PeerFlood) as floodError:
         raise HTTPException(409, detail=f"Flood Error {floodError}")
     except Exception as e:
         traceback.print_exc()
