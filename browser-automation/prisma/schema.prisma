@@ -26,6 +26,7 @@ model telegram_messages_reports {
   is_send       Boolean?
   is_duplicate  Boolean?
   error_message String?
+  session_id    Int?
 }
 
 model test_cont {
@@ -38,4 +39,14 @@ model test_cont {
   country    String?
 
   @@map("test-cont")
+}
+
+model whatsapp_messages_reports {
+  id            Int      @id @default(autoincrement())
+  phone_number  String?
+  whatsapp_name String?
+  is_send       Boolean?
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  is_duplicate  Boolean?
+  has_whatsapp  Boolean?
 }
